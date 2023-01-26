@@ -368,6 +368,26 @@ class arElasticSearchPlugin extends QubitSearchEngine
         }
     }
 
+    public function partialUpdateById(string $classname, int $id, array $data)
+    {
+        if (!$this->enabled) {
+            return;
+        }
+
+        if (0 == strcmp($classname, "QubitUser")) {
+            return;
+        }
+
+        $document = new \Elastica\Document($id, $data);
+
+        try {
+            $this->index->getType($classname)->updateDocument($document);
+        } catch (\Elastica\Exception\NotFoundException $e) {
+            // Create document if it's not found
+            $this->update($object);
+        }
+    }
+
     // ---------------------------------------------------------------------------
 
     public function delete($object)

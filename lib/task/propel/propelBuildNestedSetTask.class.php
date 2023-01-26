@@ -155,6 +155,18 @@ EOF;
 
         $this->conn->exec($sql);
 
+        $this->reindexLft($classname, $node['id'], $node['lft']);
+
         return $width;
+    }
+
+    protected function reindexLft(string $classname, int $id, int $lft)
+    {
+        $this->logSection('propel', 'Classname '.$classname);
+        $this->logSection('propel', 'Id '.$id);
+        $this->logSection('propel', 'Lft '.$lft);
+        QubitSearch::getInstance()->partialUpdateById(
+            $classname, $id, ['lft' => $lft]
+        );
     }
 }
