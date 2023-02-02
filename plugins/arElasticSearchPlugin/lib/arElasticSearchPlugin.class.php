@@ -384,9 +384,13 @@ class arElasticSearchPlugin extends QubitSearchEngine
             $this->index->getType($classname)->updateDocument($document);
         } catch (\Elastica\Exception\ResponseException $e) {
             // Create document if not existing document exists
-            $node = new arElasticSearchInformationObjectPdo($id);
-            $data = $node->serialize();
-            QubitSearch::getInstance()->addDocument($data, $classname);
+            $modelPdoClassName = self::modelClassFromQubitObjectClass($classname)."Pdo";
+
+            if (class_exists($modelPdoClassName)) {
+                $node = new $modelPdoClassName($id);
+                $data = $node->serialize();
+                QubitSearch::getInstance()->addDocument($data, $classname);
+            }
         }
     }
 
@@ -436,7 +440,7 @@ class arElasticSearchPlugin extends QubitSearchEngine
             return;
         }
 
-        $className = 'arElasticSearch'.str_replace('Qubit', '', get_class($object));
+        $className = self::modelClassFromQubitObjectClass(get_class($object));
 
         // Pass options only to information object update
         if ($object instanceof QubitInformationObject) {
@@ -565,5 +569,17 @@ class arElasticSearchPlugin extends QubitSearchEngine
         if (!$typeCount) {
             $this->log('   None');
         }
+    }
+
+    /**
+     * Get ElasticSearch model class from Qubit class.
+     *
+     * @param string $className
+     *
+     * @return string ElasticSearch model class name
+     */
+    public static function modelClassFromQubitObjectClass($className)
+    {
+        return str_replace("Qubit", "arElasticSearch", $className);
     }
 }
