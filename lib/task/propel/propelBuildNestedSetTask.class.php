@@ -35,6 +35,8 @@ class propelBuildNestedSetTask extends sfBaseTask
      */
     public function execute($arguments = [], $options = [])
     {
+        sfContext::createInstance($this->configuration);
+
         $databaseManager = new sfDatabaseManager($this->configuration);
         $this->conn = $databaseManager->getDatabase('propel')->getConnection();
 
