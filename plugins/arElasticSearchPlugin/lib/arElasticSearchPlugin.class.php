@@ -382,9 +382,11 @@ class arElasticSearchPlugin extends QubitSearchEngine
 
         try {
             $this->index->getType($classname)->updateDocument($document);
-        } catch (\Elastica\Exception\NotFoundException $e) {
-            // Create document if it's not found
-            $this->update($object);
+        } catch (\Elastica\Exception\ResponseException $e) {
+            // Create document if not existing document exists
+            $node = new arElasticSearchInformationObjectPdo($id);
+            $data = $node->serialize();
+            QubitSearch::getInstance()->addDocument($data, $classname);
         }
     }
 

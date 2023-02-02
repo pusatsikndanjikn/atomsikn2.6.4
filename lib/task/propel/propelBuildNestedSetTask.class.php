@@ -155,7 +155,9 @@ EOF;
 
         $this->conn->exec($sql);
 
-        $this->reindexLft($classname, $node['id'], $node['lft']);
+        if ($node['id'] != QubitInformationObject::ROOT_ID) {
+            $this->reindexLft($classname, $node['id'], $node['lft']);
+        }
 
         return $width;
     }
